@@ -1,5 +1,5 @@
 import express from 'express';
-import path from 'node:path';
+
 // import { fileURLToPath } from 'url'; // To get current directory in ES Modules
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -37,9 +37,9 @@ const startApolloServer = async () => {
 
   // Serve static assets in production
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/dist')));
+    app.use(express.static( '../client/dist'));
     app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+      res.sendFile( '../client/dist/index.html');
     });
   }
 

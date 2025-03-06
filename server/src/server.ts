@@ -3,13 +3,20 @@ import path from 'node:path';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
-import db from './config/connection.js';  
+import db from './config/connection.js';
 import typeDefs from './schemas/typeDefs.js';
 import resolvers from './schemas/resolvers.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
+
+// Use import.meta.url to get the directory name in ES modules
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Initialize Express app
 const app = express();

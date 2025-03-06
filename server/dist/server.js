@@ -1,9 +1,10 @@
 import express from 'express';
 import path from 'node:path';
+import { fileURLToPath } from 'url'; // To get current directory in ES Modules
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
-import db from './config/connection.js';
+import mongoose from 'mongoose'; // Ensure you are importing mongoose
 import typeDefs from './schemas/typeDefs.js';
 import resolvers from './schemas/resolvers.js';
 import dotenv from 'dotenv';
@@ -24,6 +25,8 @@ const startApolloServer = async () => {
     // Middleware for parsing JSON and URL-encoded data
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
+    // Get current directory for serving static files (replace __dirname)
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
     // Serve static assets in production
     if (process.env.NODE_ENV === 'production') {
         app.use(express.static(path.join(__dirname, '../client/build')));
@@ -46,9 +49,16 @@ const startApolloServer = async () => {
         },
     }));
     // Connect to DB and start the server
-    db.once('open', () => {
-        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}/graphql`));
-    });
+    try {
+        await mongoose.connect(process.env.MONGODB_URI || 'your_mongo_uri_here');
+        console.log('Connected to MongoDB');
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on http://localhost:${PORT}/graphql`);
+        });
+    }
+    catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+    }
 };
 // Start the server
 startApolloServer();

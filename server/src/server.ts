@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'; // To get current directory in ES Modules
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
-import db from './config/connection.js';  
+import mongoose from 'mongoose'; // Ensure you are importing mongoose
 import typeDefs from './schemas/typeDefs.js';
 import resolvers from './schemas/resolvers.js';
 import dotenv from 'dotenv';
@@ -46,7 +46,7 @@ const startApolloServer = async () => {
       context: async ({ req }) => {
         const token = req.headers.authorization || '';
         let user = null;
-  
+
         if (token.startsWith('Bearer ')) {
           try {
             user = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET_KEY!);
@@ -55,18 +55,23 @@ const startApolloServer = async () => {
             console.error('Invalid token:', error.message);
           }
         }
-  
+
         return { user };
       },
     })
   );
 
   // Connect to DB and start the server
-  db.once('open', () => {
-    app.listen(PORT, () =>
-      console.log(`🚀 Server running on http://localhost:${PORT}/graphql`)
-    );
-  });
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'your_mongo_uri_here');
+    console.log('Connected to MongoDB');
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}/graphql`);
+    });
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+  }
 };
 
 // Start the server

@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'node:path';
+import { fileURLToPath } from 'url'; // To get current directory in ES Modules
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
@@ -29,6 +30,9 @@ const startApolloServer = async () => {
   // Middleware for parsing JSON and URL-encoded data
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
+
+  // Get current directory for serving static files (replace __dirname)
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
   // Serve static assets in production
   if (process.env.NODE_ENV === 'production') {

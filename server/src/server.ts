@@ -8,6 +8,7 @@ import mongoose from 'mongoose'; // Ensure you are importing mongoose
 import typeDefs from './schemas/typeDefs.js';
 import resolvers from './schemas/resolvers.js';
 import dotenv from 'dotenv';
+import type { Request, Response } from 'express';
 
 // Load environment variables
 dotenv.config();
@@ -32,11 +33,14 @@ const startApolloServer = async () => {
   app.use(express.json());
 
   // Get current directory for serving static files (replace __dirname)
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  // const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
   // Serve static assets in production
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
+    app.get('*', (_req: Request, res: Response) => {
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    });
   }
 
   // Apply Apollo Server middleware with authentication context

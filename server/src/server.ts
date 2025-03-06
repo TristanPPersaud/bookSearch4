@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'node:path';
-import { fileURLToPath } from 'url'; // To get current directory in ES Modules
+// import { fileURLToPath } from 'url'; // To get current directory in ES Modules
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
